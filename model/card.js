@@ -1,77 +1,63 @@
 class Card{
 
-    constructor(id, name, image, height,weight,gender,eyes,hair,universe,otheraliases,education,placeoforigin,identity,knowrelatives,powers,groupafilation){
+    constructor(id, name, image,description,comics,stories,events,series){
         this.id = id;
         this.name = name;
         this.image = image;
-        this.height = height;
-        this.weight = weight;
-        this.gender = gender;
-        this.eyes = eyes;
-        this.hair = hair;
-        this.universe = universe;
-        this.otheraliases = otheraliases;
-        this.education = education;
-        this.placeoforigin = placeoforigin;
-        this.identity = identity;
-        this.knowrelatives = knowrelatives;
-        this.powers = powers;
-        this.groupafilation = groupafilation;
+        this.description = description;
+        this.comics = comics;
+        this.stories = stories;
+        this.events = events;
+        this.series = series;
         this.liked = false;
     }
 
     render(container){
+        const urlAPI = 'https://gateway.marvel.com:443/v1/public/characters?ts=1&apikey=35fa1f489d59da9312e3a83a9e181708&hash=5a96be8b3259a3c7bf4029205178a06e';
+        //const container= document.querySelector('#container');
+        //let contentHTML = '';
         let card = document.createElement('div');
         card.classList.add('card');
         
-        let html=`<div class="superheroe">
-                    <a href="javascript:abrir(${this.id})">
+        fetch(urlAPI)
+        .then(res => res.json())
+        .then((json) => {
+        for (const hero of json.data.results) {
+          let urlHero = hero.urls[0].url;
+          let html=`<div class="superheroe">
+                    <a href="javascript:abrir(${urlHero})">
                      <div  class="contenedor">
-                      <img src="${this.image}">
+                      <img src="${hero.thumbnail.path}.${hero.thumbnail.extension}">
                    </div>
                    </a>
-                    <h2>${this.name}</h2>
+                    <h2>"${hero.name}"</h2>
                  </div>
                  <button id="like${this.id}" class="unliked">FAVORITE</product>
                  
-                <div class="ventana" id="vent${this.id}">
-                  <img src="${this.image}">
+                <div class="ventana" id="vent${urlHero}">
+                  <img src="${hero.thumbnail.path}.${hero.thumbnail.extension}">
                   <div class="texto">
-                  <h1>${this.name}</h1>
+                  <h1>${hero.name}</h1>
                   <a href="javascript:cerrar()">
                     <img src="images/cerrar.png" alt="">
                   </a>
                   <div class="datos">
-                  <h3>HEIGHT</h3>
-                  <p>${this.height}</p>
-                  <h3>WEIGHT</h3>
-                  <p>${this.weight}</p>
-                  <h3>GENDER</h3>
-                  <p>${this.gender}</p>
-                  <h3>EYES</h3>
-                  <p>${this.eyes}</p>
-                  <h3>HAIR</h3>
-                  <p>${this.hair}</p>
-                  <h3>UNIVERSE</h3>
-                  <p>${this.universe}/p>
-                  <h3>OTHER ALIASES</h3>
-                  <p>${this.otheraliases}</p>
-                  <h3>EDUCATION</h3>
-                  <p>${this.education}</p>
-                  <h3>PLACE OF ORIGIN</h3>
-                  <p>${this.placeoforigin}</p>
-                  <h3>IDENTITY</h3>
-                  <p>${this.identity}</p>
-                  <h3>KNOWN RELATIVES</h3>
-                  <p>${this.knowrelatives}</p>
-                  <h3>POWERS</h3>
-                  <p>${this.powers}</p>
-                  <h3>GROUP AFFILIATION</h3>
-                  <p>${this.groupafilation}/p>
+                  <h3>DESCRIPCION</h3>
+                  <p>${hero.description}</p>
+                  <h3>COMICS</h3>
+                  <p>${hero.comics}</p>
+                  <h3>HISTORIAS</h3>
+                  <p>${hero.stories}</p>
+                  <h3>EVENTOS</h3>
+                  <p>${hero.events}</p>
+                  <h3>SERIES</h3>
+                  <p>${hero.series}</p>
                 </div>
                 </div>
                </div>`;
-    
+            }
+            container.innerHTML = contentHTML;
+            })
         
         card.innerHTML += html;
         container.appendChild(card);
@@ -81,10 +67,29 @@ class Card{
     }
 
     addLike(){
+        let userList = [];
+        let loadedUsers = localStorage.getItem("user");
+        if (loadedUsers !== null) {
+            userList = JSON.parse(loadedUsers);
+        }
+        let characterList = [];
+        let loadedCharacters = localStorage.getItem("character");
+        if (loadedCharacters !== null) {
+            characterList = JSON.parse(loadedCharacters);
+        }
+
         let likeBtn = document.getElementById(`like${this.id}`);
         this.liked = !this.liked;
         if(this.liked){
             likeBtn.classList.remove("unliked");
+            console.log(userList)
+            for (let i = 0; i < userList.length; i++) {
+                console.log(userList[i])
+                if (userList[i].isLogged == true) {
+                    userList[i].favList.push(characterList[this.id-1])
+                    console.log("logged",userList[i])
+                }                
+            }
             likeBtn.classList.add("liked");
         }else{
             likeBtn.classList.remove("liked");
@@ -101,3 +106,31 @@ function abrir(vent){
 function cerrar(vent){
     document.getElementById(`vent${vent}`).style.display="none";
 }
+
+
+
+//const marvel = {
+    //render: () => {
+        
+        //const urlAPI = 'https://gateway.marvel.com:443/v1/public/characters?ts=1&apikey=35fa1f489d59da9312e3a83a9e181708&hash=5a96be8b3259a3c7bf4029205178a06e';
+        //const container= document.querySelector('#container');
+        //let contentHTML = '';
+
+        //fetch(urlAPI)
+        //.then(res => res.json())
+        //.then((json) => {
+        //for (const hero of json.data.results) {
+          //let urlHero = hero.urls[0].url;
+          //contentHTML += `
+            //<div class="col-md-4">
+                //<a href="${urlHero}" target="_blank">
+                  //<img src="${hero.thumbnail.path}.${hero.thumbnail.extension}" alt="${hero.name}" class="img-thumbnail">
+                //</a>
+                //<h3 class="title">${hero.name}</h3>
+            //</div>`;
+        //}
+        //container.innerHTML = contentHTML;
+        //})
+    //}
+  //}
+  //marvel.render();

@@ -10,7 +10,8 @@ function signup() {
         name: name,
         email: email,
         password: password,
-        isLogged: false
+        isLogged: false,
+        favList: []
     }
     
     const userJsonStr = JSON.stringify(user)

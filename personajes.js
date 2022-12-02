@@ -229,6 +229,7 @@ let db = `[
   ]`;
 
   let data = JSON.parse(db);
+  localStorage.setItem("character", db)
 
 
   const container = document.getElementById('container');
@@ -259,3 +260,7 @@ let db = `[
   }
 
   console.log(window.location.href);
+
+ 
+
+
